@@ -1,4 +1,0 @@
-
-docker run \                     
-    -v /Users/kuan-linchiu/Documents/Codes/sftp-HA/data:/home \
-    -p 2222:22 sftp:0.1

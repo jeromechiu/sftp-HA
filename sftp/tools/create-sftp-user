@@ -65,6 +65,7 @@ if [ -n "$gid" ]; then
     useraddOptions+=(--gid "$gid")
 fi
 
+
 useradd "${useraddOptions[@]}" "$user"
 mkdir -p "/home/$user"
 chown root:root "/home/$user"
@@ -92,7 +93,6 @@ if [ -d "$userKeysQueuedDir" ]; then
 
     # Remove duplicate keys
     sort < "$userKeysAllowedFileTmp" | uniq > "$userKeysAllowedFile"
-
     chown "$uid" "$userKeysAllowedFile"
     chmod 600 "$userKeysAllowedFile"
 fi

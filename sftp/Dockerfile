@@ -12,14 +12,12 @@ RUN apk update && apk upgrade && \
     mkdir -p /var/run/sshd && \
     rm -f /etc/ssh/ssh_host_*key*
 
-RUN adduser -p 1234 admin
-RUN usermod -d /home admin
 
 COPY config/sshd_config /etc/ssh/sshd_config
-COPY files/create-sftp-user /usr/local/bin/
-COPY files/entrypoint /
+COPY tools/create-sftp-user /usr/local/bin/
+COPY tools/runsftp.sh /
+COPY tools/main.py /
 
 EXPOSE 22
 
-# ENTRYPOINT ["/entrypoint"]
-CMD ["bash"]
+ENTRYPOINT ["python",  "main.py"]

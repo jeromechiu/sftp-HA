@@ -1,0 +1,10 @@
+services:
+  sftp:
+    build: sftp
+    restart: always
+    container_name: sftp
+    ports:
+      - '2222:22'
+    volumes:
+      - '/Users/kuan-linchiu/Documents/Codes/sftp-HA/sftp/config/users.conf:/etc/sftp/users.conf:rw'
+      - '/Users/kuan-linchiu/Documents/Codes/sftp-HA/sftp/data:/home:rw'
