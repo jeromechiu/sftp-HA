@@ -1,0 +1,12 @@
+Master:
+  IP: 127.0.0.1
+  PORT: 2222
+  USERNAME: admin
+  PASSWORD: 1234
+  SYNCMETHOD: single
+
+Standby:
+  IP: 127.0.0.1
+  PORT: 2223
+  USERNAME: admin
+  PASSWORD: 1234
