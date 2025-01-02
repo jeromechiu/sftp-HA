@@ -55,7 +55,37 @@ class sftp:
         """lists all the files and directories (with their attributes) in the specified path and returns them"""
         for attr in self.connection.listdir_attr(remote_path):
             yield attr
+            
+    def listfiles(self, remote_path):
+        """lists all files in sftp with directory and returns them"""
+        files = list()
+        try:
+            # for file in master.listdir('/'):
+            for file in self.listdir_attr(remote_path):
+                # print(file.filename, file.st_mode, file.st_size, file.st_atime, file.st_mtime)
+                if S_ISDIR(file.st_mode):
+                    # print(file.filename + " is folder")
+                    files.extend(self.listfiles(os.path.join(remote_path,file.filename)))
+                elif S_ISREG(file.st_mode):
+                    
+                    if list(file.filename)[0] != '.':
+                        # print(file.filename + " is file")
+                        files.append([remote_path, file.filename, file.st_mtime])
 
+        except Exception as ex:
+            print(f'Get File List error: {ex}')
+        return files
+    def fileAttr(self, remote_path, filename):
+        attr = None
+        full_filename = os.path.join(remote_path, filename)
+        try:
+            attr = self.connection.stat(full_filename)
+        except FileNotFoundError:
+            print('No Such file at target') 
+        return attr
+
+def doSync():
+    pass
 
 def monitorConfig(q):
     lastModoft = os.path.getmtime(configName)
@@ -69,37 +99,36 @@ def monitorConfig(q):
 
 def syncFile(config):
     print('Start to run Sync function')
-
-    with open(config,'r') as fp:
-        configContext = yaml.load(fp, Loader=yaml.FullLoader)
-        masterIP = configContext['Master']['IP']
-        masterPORT = configContext['Master']['PORT']
-        masterUSER = configContext['Master']['USERNAME']
-        masterPASSWD = configContext['Master']['PASSWORD']
-        syncMETHOD = configContext['Master']['SYNCMETHOD'] # Currently, the program only support single direction synchronization.
-        
-        standyIP = configContext['Standby']['IP']
-        standyPORT = configContext['Standby']['PORT']
-        standyUSER = configContext['Standby']['USERNAME']
-        standyPASSWD = configContext['Standby']['PASSWORD']
-        
-    master = sftp(hostname = masterIP,port = masterPORT, username = masterUSER,password = masterPASSWD)
-    master.connect()
-    standby = sftp(hostname = standyIP,port = standyPORT, username = standyUSER,password = standyPASSWD)
-    standby.connect()
-    root = '/'
-    try:
-        # for file in master.listdir('/'):
-        for file in master.listdir_attr(root):
-            print(file.filename, file.st_mode, file.st_size, file.st_atime, file.st_mtime)
-            if S_ISDIR(file.st_mode):
-                print(file.filename + " is folder")
-            elif S_ISREG(file.st_mode):
-                print(file.filename + " is file")
-    except Exception as ex:
-        print(f'Get File List error: {ex}')
+    while True:
+        with open(config,'r') as fp:
+            configContext = yaml.load(fp, Loader=yaml.FullLoader)
+            masterIP = configContext['Master']['IP']
+            masterPORT = configContext['Master']['PORT']
+            masterUSER = configContext['Master']['USERNAME']
+            masterPASSWD = configContext['Master']['PASSWORD']
+            syncMETHOD = configContext['Master']['SYNCMETHOD'] # Currently, the program only support single direction synchronization.
             
-    time.sleep(1)
+            standyIP = configContext['Standby']['IP']
+            standyPORT = configContext['Standby']['PORT']
+            standyUSER = configContext['Standby']['USERNAME']
+            standyPASSWD = configContext['Standby']['PASSWORD']
+            
+        master = sftp(hostname = masterIP,port = masterPORT, username = masterUSER,password = masterPASSWD)
+        master.connect()
+        standby = sftp(hostname = standyIP,port = standyPORT, username = standyUSER,password = standyPASSWD)
+        standby.connect()
+        root = '/'
+        masterFiles = master.listfiles(root)
+        # print(masterFiles)
+
+        for dic, filename, mktime in masterFiles:
+            print(f' check file {dic}/{filename}')
+            attr = standby.fileAttr(remote_path=dic, filename=filename)
+            if attr == None:
+                continue
+            
+            break
+        time.sleep(1)
 
 def runAll():
     q = mp.Queue()
