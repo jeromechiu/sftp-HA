@@ -5,6 +5,7 @@ import subprocess
 import multiprocessing as mp
 import hashlib
 import json
+from tempfile import TemporaryDirectory
 from time import strftime, localtime
 import time
 from stat import S_ISDIR, S_ISREG
@@ -75,6 +76,7 @@ class sftp:
         except Exception as ex:
             print(f'Get File List error: {ex}')
         return files
+    
     def fileAttr(self, remote_path, filename):
         attr = None
         full_filename = os.path.join(remote_path, filename)
@@ -83,9 +85,81 @@ class sftp:
         except FileNotFoundError:
             print('No Such file at target') 
         return attr
+    
+    def upload(self, source_local_path, remote_dir, remote_filename):
+        """
+        Uploads the source files from local to the sftp server.
+        """
+        print(f'uploading {remote_filename} to {self.hostname} as {self.username} [(remote path: {remote_dir});\
+            (source local path: {source_local_path})]')
 
-def doSync():
-    pass
+        root = '/'
+        with self.connection.cd():
+            if not self.connection.exists(remote_dir):
+                print(f'Remote folder {remote_dir} not exist')
+                folders = remote_dir.split('/')[1:]
+                for f in folders:
+                    if not self.connection.exists(f):
+                        print(f'Prepare to create folder: {f}')
+                        self.connection.mkdir(f)
+                    self.connection.chdir(f)
+            try:
+                # Upload file from SFTP
+                self.connection.put(localpath=source_local_path, remotepath=os.path.join(remote_dir,remote_filename), confirm=True)
+                print("upload completed")
+
+            except Exception as err:
+                raise Exception(err)
+        
+
+
+                
+                
+            
+        
+        
+
+        
+    def download(self, remote_path, target_local_path):
+        """
+        Downloads the file from remote sftp server to local.
+        Also, by default extracts the file to the specified target_local_path
+        """
+
+        try:
+            print(f'downloading from {self.hostname} as {self.username} [(remote path : \
+                {remote_path});(local path: {target_local_path})]')
+
+            # Create the target directory if it does not exist
+            path, _ = os.path.split(target_local_path)
+            if not os.path.isdir(path):
+                try:
+                    os.makedirs(path)
+                except Exception as err:
+                    raise Exception(err)
+
+            # Download from remote sftp server to local
+            self.connection.get(remote_path, target_local_path)
+            print("download completed")
+
+        except Exception as err:
+            raise Exception(err)
+
+def doSync(mode, master, standby, masterFiles, standbyFiles):
+    with TemporaryDirectory(prefix="sftp_") as tmpdirname:
+        if mode == 'single':
+            standbyFilesNoMktime = [[x1,x2] for [x1,x2,_] in standbyFiles]
+            """Master files first"""
+            for directory, filename, mktime in masterFiles:
+                print(f'Check file {os.path.join(directory,filename)} of Standby')
+                print(f'{[directory, filename, mktime]}')
+                if [directory, filename] not in standbyFilesNoMktime:
+                    print(f'File {filename} in Master ----> standby')
+                    master.download(os.path.join(directory, filename), os.path.join(tmpdirname, filename))
+                    standby.upload(os.path.join(tmpdirname, filename), directory, filename)
+        else:
+            """Not yet implement"""
+            pass
 
 def monitorConfig(q):
     lastModoft = os.path.getmtime(configName)
@@ -99,36 +173,37 @@ def monitorConfig(q):
 
 def syncFile(config):
     print('Start to run Sync function')
+    with open(config,'r') as fp:
+        configContext = yaml.load(fp, Loader=yaml.FullLoader)
+        masterIP = configContext['Master']['IP']
+        masterPORT = configContext['Master']['PORT']
+        masterUSER = configContext['Master']['USERNAME']
+        masterPASSWD = configContext['Master']['PASSWORD']
+        syncMETHOD = configContext['Master']['SYNCMETHOD'] # Currently, the program only support single direction synchronization.
+        
+        standyIP = configContext['Standby']['IP']
+        standyPORT = configContext['Standby']['PORT']
+        standyUSER = configContext['Standby']['USERNAME']
+        standyPASSWD = configContext['Standby']['PASSWORD']
+    
+    master = sftp(hostname = masterIP,port = masterPORT, username = masterUSER,password = masterPASSWD)
+    master.connect()
+    standby = sftp(hostname = standyIP,port = standyPORT, username = standyUSER,password = standyPASSWD)
+    standby.connect()
+    
     while True:
-        with open(config,'r') as fp:
-            configContext = yaml.load(fp, Loader=yaml.FullLoader)
-            masterIP = configContext['Master']['IP']
-            masterPORT = configContext['Master']['PORT']
-            masterUSER = configContext['Master']['USERNAME']
-            masterPASSWD = configContext['Master']['PASSWORD']
-            syncMETHOD = configContext['Master']['SYNCMETHOD'] # Currently, the program only support single direction synchronization.
             
-            standyIP = configContext['Standby']['IP']
-            standyPORT = configContext['Standby']['PORT']
-            standyUSER = configContext['Standby']['USERNAME']
-            standyPASSWD = configContext['Standby']['PASSWORD']
-            
-        master = sftp(hostname = masterIP,port = masterPORT, username = masterUSER,password = masterPASSWD)
-        master.connect()
-        standby = sftp(hostname = standyIP,port = standyPORT, username = standyUSER,password = standyPASSWD)
-        standby.connect()
+
         root = '/'
         masterFiles = master.listfiles(root)
-        # print(masterFiles)
-
-        for dic, filename, mktime in masterFiles:
-            print(f' check file {dic}/{filename}')
-            attr = standby.fileAttr(remote_path=dic, filename=filename)
-            if attr == None:
-                continue
-            
-            break
-        time.sleep(1)
+        standbyFiles = standby.listfiles(root)
+        print('______________________')
+        print(f'masterFiles: {masterFiles}')
+        print(f'standbyFiles: {standbyFiles}')
+        doSync(syncMETHOD, master=master, standby=standby, masterFiles=masterFiles, standbyFiles=standbyFiles)
+        time.sleep(10)
+        
+        
 
 def runAll():
     q = mp.Queue()
@@ -140,9 +215,7 @@ def runAll():
     
     while True:
         if q.get() == 'changed':
-            print('j')
             sync.terminate()
-            print('fefe')
             sync = mp.Process(target=syncFile, args=(configName,))
             sync.start()
             
