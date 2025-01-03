@@ -173,5 +173,6 @@ cython_debug/
 */data
 */data-standby
 .DS_Store
+**/.DS_Store
 temp/
 tests/
