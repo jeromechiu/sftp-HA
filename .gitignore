@@ -170,6 +170,8 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-data/*
-data-standby/*
+*/data
+*/data-standby
 .DS_Store
+temp/
+tests/
