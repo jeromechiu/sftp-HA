@@ -1,14 +1,13 @@
 services:
   sftp-master:
-    # image: sftp
-    build: sftp
-    restart: always
     container_name: sftp-master
+    image: sftp:0.3
+    restart: always
     ports:
       - '2222:22'
     volumes:
-      - '/home/jerome/Codes/sftp-HA/sftp/config/users.conf:/etc/sftp/users.conf:rw'
-      # - '/home/jerome/Codes/sftp-HA/sftp/data:/home:rw'
+      - '/home/jerome/Codes/sftp-HA/sftp/data:/home:rw'
+      - '/home/jerome/Codes/sftp-HA/sftp/config/users.yaml:/home/admin/admin/users.yaml:rw'
     networks:
       vpcbr:
         ipv4_address: 10.5.0.2

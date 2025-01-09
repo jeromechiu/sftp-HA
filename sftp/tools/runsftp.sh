@@ -45,24 +45,24 @@ if [ ! -f "$userConfFinalPath" ]; then
         done
     fi
 
-    if [ -n "$SFTP_USERS" ]; then
-        # Append users from environment variable to final config
-        IFS=" " read -r -a usersFromEnv <<< "$SFTP_USERS"
-        for user in "${usersFromEnv[@]}"; do
-            echo "$user" >> "$userConfFinalPath"
-        done
-    fi
+    # if [ -n "$SFTP_USERS" ]; then
+    #     # Append users from environment variable to final config
+    #     IFS=" " read -r -a usersFromEnv <<< "$SFTP_USERS"
+    #     for user in "${usersFromEnv[@]}"; do
+    #         echo "$user" >> "$userConfFinalPath"
+    #     done
+    # fi
 
-    # Check that we have users in config
-    if [ -f "$userConfFinalPath" ] && [ "$(wc -l < "$userConfFinalPath")" -gt 0 ]; then
-        # Import users from final conf file
-        while IFS= read -r user || [[ -n "$user" ]]; do
-            create-sftp-user "$user"
-        done < "$userConfFinalPath"
-    elif $startSshd; then
-        log "FATAL: No users provided!"
-        exit 3
-    fi
+    # # Check that we have users in config
+    # if [ -f "$userConfFinalPath" ] && [ "$(wc -l < "$userConfFinalPath")" -gt 0 ]; then
+    #     # Import users from final conf file
+    #     while IFS= read -r user || [[ -n "$user" ]]; do
+    #         create-sftp-user "$user"
+    #     done < "$userConfFinalPath"
+    # elif $startSshd; then
+    #     log "FATAL: No users provided!"
+    #     exit 3
+    # fi
 
     # Generate unique ssh keys for this container, if needed
     if [ ! -f /etc/ssh/ssh_host_ed25519_key ]; then
