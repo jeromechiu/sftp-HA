@@ -1,7 +1,7 @@
 users:
   ADMIN:
     name: "admin"
-    password: "1234"
+    password: "AhqTi3W4baG8U0u"
     admin: true
   1:
     name: "user1"
@@ -23,4 +23,13 @@ users:
     password: "1234"
   7:                                                           
     name: "user7"                                              
+    password: "1234"
+  8:                                                           
+    name: "user8"                                              
+    password: "1234"
+  9:                                                           
+    name: "user9"                                              
+    password: "1234"
+  10:                                                           
+    name: "EPuser"                                              
     password: "1234"
