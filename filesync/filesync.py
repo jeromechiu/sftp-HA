@@ -253,6 +253,7 @@ def syncFile(config):
                                masterFiles=masterFiles, standbyFiles=standbyFiles)
                         master.disconnect()
                         standby.disconnect()
+                        time.sleep(1)
 
         time.sleep(100)
 
