@@ -1,3 +1,5 @@
+version: "3.1"
+
 services:
   sftp-master:
     container_name: sftp-master
@@ -6,8 +8,8 @@ services:
     ports:
       - '2222:22'
     volumes:
-      - '/home/jerome/Codes/sftp-HA/sftp/data:/home:rw'
-      - '/home/jerome/Codes/sftp-HA/sftp/config/users.yaml:/home/admin/admin/users.yaml:rw'
+      - './sftp/data:/home:rw'
+      - './sftp/config/users.yaml:/home/admin/admin/users.yaml:rw'
     networks:
       sftp-net:
         ipv4_address: 10.5.0.2

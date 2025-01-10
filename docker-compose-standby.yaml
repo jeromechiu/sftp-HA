@@ -1,3 +1,5 @@
+version: "3.1"
+
 services:
   sftp-standby:
     container_name: sftp-standby
@@ -6,8 +8,8 @@ services:
     ports:
       - '2223:22'
     volumes:
-      - '/home/jerome/Codes/sftp-HA/sftp/data-standby:/home:rw'
-      - '/home/jerome/Codes/sftp-HA/sftp/config/users.yaml:/home/admin/admin/users.yaml:rw'
+      - './sftp/data-standby:/home:rw'
+      - './sftp/config/users.yaml:/home/admin/admin/users.yaml:rw'
     networks:
       sftp-net:
         ipv4_address: 10.5.0.3
@@ -30,4 +32,3 @@ networks:
     ipam:
       config:
         - subnet: 10.5.0.0/16
-          gateway: 10.5.0.1
