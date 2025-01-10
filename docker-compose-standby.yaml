@@ -3,7 +3,8 @@ version: "3.1"
 services:
   sftp-standby:
     container_name: sftp-standby
-    image: sftp:0.1
+    # image: sftp:0.1
+    build: ./sftp
     restart: always
     ports:
       - '2223:22'

@@ -3,7 +3,8 @@ version: "3.1"
 services:
   sftp-master:
     container_name: sftp-master
-    image: sftp:0.1
+    # image: sftp:0.1
+    build: ./sftp
     restart: always
     ports:
       - '2222:22'
