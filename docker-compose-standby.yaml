@@ -15,7 +15,7 @@ services:
       sftp-net:
         ipv4_address: 10.5.0.3
   
-  sftp-Sync:
+  sftp-sync:
     container_name: sftp-sync
     # image: filesync:0.1
     build: ./filesync
