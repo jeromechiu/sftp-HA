@@ -1,7 +1,7 @@
 services:
   sftp-standby:
     container_name: sftp-standby
-    image: sftp:0.3
+    image: sftp:0.1
     restart: always
     ports:
       - '2223:22'
@@ -9,13 +9,25 @@ services:
       - '/home/jerome/Codes/sftp-HA/sftp/data-standby:/home:rw'
       - '/home/jerome/Codes/sftp-HA/sftp/config/users.yaml:/home/admin/admin/users.yaml:rw'
     networks:
-      vpcbr:
+      sftp-net:
         ipv4_address: 10.5.0.3
-    
+  
+  sftp-Sync:
+    container_name: sftp-sync
+    image: filesync:0.1
+    restart: always
+    depends_on:
+      - sftp-standby
+    volumes:
+      - './filesync/config.yaml:/config.yaml:ro'
+    networks:
+      sftp-net:
+        ipv4_address: 10.5.0.5
+
 networks:
-  vpcbr:
+  sftp-net:
     driver: bridge
     ipam:
-     config:
-       - subnet: 10.5.0.0/16
-         gateway: 10.5.0.1
+      config:
+        - subnet: 10.5.0.0/16
+          gateway: 10.5.0.1

@@ -1,12 +1,12 @@
 Master:
-  IP: 127.0.0.1
-  PORT: 2222
+  IP: 10.5.0.2
+  PORT: 22
   USERNAME: admin
   PASSWORD: AhqTi3W4baG8U0u
   SYNCMETHOD: single
 
 Standby:
-  IP: 127.0.0.1
-  PORT: 2223
+  IP: sftp-standby
+  PORT: 22
   USERNAME: admin
   PASSWORD: AhqTi3W4baG8U0u

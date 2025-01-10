@@ -38,8 +38,6 @@ class sftp:
             )
         except Exception as err:
             raise Exception(err)
-        finally:
-            print(f"Connected to {self.hostname} as {self.username}.")
 
     def disconnect(self):
         """Closes the sftp connection"""
@@ -192,6 +190,7 @@ def syncFile(config):
                       username=masterUSER, password=masterPASSWD)
         try:
             master.connect()
+            print(f"Connected to {masterIP} as {masterUSER}.")
         except Exception as ex:
             print(f'Connect to Master error: {ex}')
             return
@@ -223,11 +222,6 @@ def syncFile(config):
 
             with open(f'{tmpdirname}/users.yaml', 'r') as fp:
                 users = yaml.load(fp, Loader=yaml.FullLoader)
-                # print(users)
-                # """{'users':
-                # {'ADMIN': {'name': 'admin', 'password': 'AhqTi3W4baG8U0u', 'admin': True},
-                # 1: {'name': 'user1', 'password': '1234'}, 2: {'name': 'user2', 'password': '1234'}
-                # }}}"""
                 for user in users['users']:
                     if users['users'][user]['name'] != 'admin':
                         username = users['users'][user]['name']
@@ -260,14 +254,13 @@ def syncFile(config):
                         master.disconnect()
                         standby.disconnect()
 
-        time.sleep(10)
+        time.sleep(100)
 
 
 def runAll():
-    # q = mp.Queue()
+
     config_flag = Event()
     working_flag = Event
-    # monitor = mp.Process(target=monitorConfig, args=(q,))
     monitor = mp.Process(target=monitorConfig, args=(config_flag,))
     sync = mp.Process(target=syncFile, args=(configName,))
 
@@ -294,7 +287,6 @@ def runAll():
 
 if __name__ == '__main__':
     mp.set_start_method('spawn')
-    # q = mp.Queue()
     run = mp.Process(target=runAll, args=())
     run.start()
     run.join()

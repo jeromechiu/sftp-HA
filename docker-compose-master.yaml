@@ -1,7 +1,7 @@
 services:
   sftp-master:
     container_name: sftp-master
-    image: sftp:0.3
+    image: sftp:0.1
     restart: always
     ports:
       - '2222:22'
@@ -9,14 +9,14 @@ services:
       - '/home/jerome/Codes/sftp-HA/sftp/data:/home:rw'
       - '/home/jerome/Codes/sftp-HA/sftp/config/users.yaml:/home/admin/admin/users.yaml:rw'
     networks:
-      vpcbr:
+      sftp-net:
         ipv4_address: 10.5.0.2
 
-
 networks:
-  vpcbr:
+  sftp-net:
     driver: bridge
     ipam:
-     config:
-       - subnet: 10.5.0.0/16
-         gateway: 10.5.0.1
+      config:
+        - subnet: 10.5.0.0/16
+          gateway: 10.5.0.1
+
