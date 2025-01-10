@@ -17,7 +17,8 @@ services:
   
   sftp-Sync:
     container_name: sftp-sync
-    image: filesync:0.1
+    # image: filesync:0.1
+    build: ./filesync
     restart: always
     depends_on:
       - sftp-standby
