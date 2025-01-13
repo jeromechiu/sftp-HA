@@ -21,3 +21,4 @@ ChrootDirectory /home/%u
 
 # Enable this for more logs
 LogLevel VERBOSE
+MaxSessions 50

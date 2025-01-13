@@ -79,6 +79,15 @@ class userAccount():
 
 
 def monitorUserAccount(account):
+    """
+    Monitors the user account file for changes and performs actions accordingly.
+
+    Args:
+        account (str): The path to the user account file.
+
+    Returns:
+        None
+    """
     lastModoft = os.path.getmtime(account)
     firstRun = True
     usermanager = userAccount()

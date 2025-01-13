@@ -170,6 +170,9 @@ def monitorConfig(event):
 
 
 def syncFile(config):
+    """
+    Synchronizes files between a master and standby SFTP server based on the configuration file.
+    """
     print('Start to run Sync admin files')
     with open(config, 'r') as fp:
         configContext = yaml.load(fp, Loader=yaml.FullLoader)
@@ -259,7 +262,9 @@ def syncFile(config):
 
 
 def runAll():
-
+    """
+    Runs the monitorConfig and syncFile processes concurrently.
+    """
     config_flag = Event()
     working_flag = Event
     monitor = mp.Process(target=monitorConfig, args=(config_flag,))
