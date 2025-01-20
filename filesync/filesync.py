@@ -1,7 +1,6 @@
 import os
 import pysftp
 import yaml
-import subprocess
 from multiprocessing import Event
 import multiprocessing as mp
 from tempfile import TemporaryDirectory

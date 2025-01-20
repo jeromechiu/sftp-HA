@@ -1,0 +1,49 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+   
+    <title>sFTP Stress Test</title>
+  </head>
+  <body>
+   
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    <form action="" method="post" style="margin-top: 20px;margin-left: 20px;">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label }}
+                {{ field }}
+            </div>
+            <br>
+        {% endfor %}
+        <input type="submit" value="Submit">
+    </form>
+    <hr>
+    <div id="connection-status" style="margin-top: 20px;margin-left: 20px;">
+      Connection Status: <span id="status">Unknown</span>
+    </div>
+
+    <script>
+      function updateConnectionStatus() {
+        fetch('/stress/check_connection_status/')
+          .then(response => response.json())
+          .then(data => {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = data.is_connected ? 'Connected' : 'Disconnected';
+          });
+      }
+
+      // Update connection status every 5 seconds
+      setInterval(updateConnectionStatus, 5000);
+      updateConnectionStatus(); // Initial check
+    </script>
+
+
+</body>
+</html>

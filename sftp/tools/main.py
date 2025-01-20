@@ -11,25 +11,6 @@ import logging
 import subprocess
 import logging.handlers
 
-
-# def monitorUserAccount(q):
-#     account = '/etc/sftp/users.conf'
-#     lastModoft = os.path.getmtime(account)
-#     while True:
-#         if lastModoft != os.path.getmtime(account):
-#             lastModoft = os.path.getmtime(account)
-
-#             with open(account, 'r') as f:
-#                 lines = [line.rstrip('\n') for line in f]
-#             for l in lines:
-#                 addcmd = ['/usr/local/bin/create-sftp-user', l]
-#                 subprocess.run(addcmd)
-
-#             q.put('changed')
-#             print(f'users.conf is changed at {strftime(' % Y-%m-%d % H: % M: % S', \
-#                 localtime(os.path.getmtime(account)))}')
-#         time.sleep(10)
-
 """Create a linux user for sftp"""
 
 
