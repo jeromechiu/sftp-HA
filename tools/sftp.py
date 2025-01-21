@@ -1,4 +1,6 @@
 import pysftp
+import os
+from stat import S_ISDIR, S_ISREG
 
 
 class sftp:
@@ -10,7 +12,6 @@ class sftp:
         self.username = username
         self.password = str(password).encode('utf-8')
         self.port = port
-        
 
     def connect(self):
         """Connects to the sftp server and returns the sftp connection object"""
