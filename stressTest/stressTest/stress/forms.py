@@ -10,5 +10,6 @@ class sftpForm(forms.Form):
         label='SFTP Username: ', max_length=100, initial='EPuser')
     sftp_password = forms.CharField(
         label='SFTP Password: ', max_length=100, initial=1234)
-    dummy_amount = forms.IntegerField(
-        label='Number of Dummy Files: ', initial=2)
+
+class dummycountForm(forms.Form):
+    dummy_amount = forms.IntegerField(label='Number of Dummy Files:', initial=2, max_value=1000, min_value=1)
