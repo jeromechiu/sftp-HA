@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "bootstrap5",
     "stress",
+    "celery_progress",
 ]
 
 MIDDLEWARE = [
@@ -124,5 +125,7 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# CELERY_BROKER_URL = 'amqp://127.0.0.1:5672'
 
 sftp_folders = ['1', '2']

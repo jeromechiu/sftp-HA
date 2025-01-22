@@ -1,4 +1,9 @@
-
+  <!-- 
+    This is the index.html file located at /home/jerome/Codes/sftp-HA/stressTest/stressTest/stress/templates/.
+    It contains the required meta tags for the webpage.
+  -->
+  
+{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -22,14 +27,13 @@
         {% endfor %}
         <input type="submit" value="Test">
     </form>
-    <hr>
     <div id="sftp-status" style="margin-top: 20px;margin-left: 20px;">
       sFTP Status: <span id="status">Unknown</span>
     </div>
 
     <script>
       function updateConnectionStatus() {
-        fetch('/stress/check_connection_status/')
+        fetch('/stress/check_connection_s')
           .then(response => response.json())
           .then(data => {
             const statusElement = document.getElementById('status');
@@ -38,14 +42,14 @@
 
       }
 
-      // Update connection status every 5 seconds
-      setInterval(updateConnectionStatus, 5000);
+      // Update connection status every 10 seconds
+      setInterval(updateConnectionStatus, 10000);
       updateConnectionStatus(); // Initial check
     </script>
     <hr>
     <div id="sftp-dummyupload" style="margin-top: 20px;margin-left: 20px;">
       <form action="/stress/do_test" method="get">
-        {% csrf_token %}
+        <!-- {% csrf_token %} -->
         {% for field in dummyform %}
         <div class="form-group">
             {{ field.label }}
@@ -53,8 +57,45 @@
         </div>
         <br>
         {% endfor %}
-        <input type="submit" value="Do Stress Test">
-      </form>
 
+        <input type="submit" value="Do Stress Test">
+    </div>
+    <div id="upload-status" style="margin-top: 20px;margin-left: 20px;">
+      Upload Status: <span id="uploadstatus">Unknown</span>
+    </div>
+
+    <script>
+      function updateUploadStatus() {
+        fetch('/stress/check_progress')
+          .then(response => response.json())
+          .then(data => {
+            const statusElement = document.getElementById('uploadstatus');
+            statusElement.textContent = data.done_count + ' / ' + data.total_count;
+          });
+
+      }
+      // Update upload status every 1 seconds
+      setInterval(updateUploadStatus, 3000);
+      updateUploadStatus(); // Initial check
+    </script>
+
+
+    <div id="file-detail" style="margin-top: 20px;margin-left: 20px;">
+      File List: <span id="filedetail">Unknown</span>
+    </div>
+    <script>
+      function showFileDetail() {
+        fetch('/stress/get_file_detail')
+          .then(response => response.json())
+          .then(data => {
+            const statusElement = document.getElementById('filedetail');
+            statusElement.innerHTML = data.result.replace(/\n/g, '<br>');
+          });
+
+      }
+      // Update upload status every 1 seconds
+      setInterval(showFileDetail, 1500);
+      showFileDetail(); // Initial check
+    </script>
   </body>
 </html>

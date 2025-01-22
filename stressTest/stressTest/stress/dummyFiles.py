@@ -1,19 +1,34 @@
-from random import randint
-import time
-from tempfile import TemporaryDirectory
+
 import os
 import sys
+import time
 from pathlib import Path
+from random import randint
+from tempfile import TemporaryDirectory
+
 from stressTest import settings
 
 sys.path.insert(1, os.path.join(settings.BASE_DIR.parent.parent, 'tools'))  # nopep8
 from sftp import sftp  # nopep8
 
 
-def writeDummyFiles(folder, sftp_url, sftp_port, sftp_username, sftp_password):
+def writeDummyFiles(folder, sftp_url, sftp_port, sftp_username, sftp_password, filename):
+    """
+    Writes dummy files with random data and uploads them to an SFTP server.
+
+    Args:
+        folder (str): The folder on the SFTP server where the file will be uploaded.
+        sftp_url (str): The URL of the SFTP server.
+        sftp_port (int): The port number of the SFTP server.
+        sftp_username (str): The username for the SFTP server.
+        sftp_password (str): The password for the SFTP server.
+        filename (str): The name of the file to be uploaded.
+
+    Returns:
+        bool: True if the file was successfully uploaded, False otherwise.
+    """
     with TemporaryDirectory() as root:
         size = randint(500, 10000)
-        filename = f'{int(time.time())}.txt'
         try:
             f = open(os.path.join(root, filename), "w")
             for _ in range(size):
