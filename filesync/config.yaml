@@ -1,7 +1,7 @@
 Master:
-  IP: 10.5.0.2
+  IP: 10.65.11.180
   # Change IP to the IP of the master server
-  PORT: 22
+  PORT: 2222
   USERNAME: admin
   PASSWORD: AhqTi3W4baG8U0u
   # Change the password to the password of the master server

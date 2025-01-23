@@ -6,11 +6,17 @@ FROM alpine:latest
 RUN apk update && apk upgrade && \
     apk add bash shadow openssh-server-pam openssh-sftp-server python3 py3-pip  && \
     rm -rf /var/cache/apk/*
-COPY config.yaml /
-COPY requirements.txt /
-COPY filesync.py /
+RUN mkdir -p /var/run/filesync/filesync
+RUN mkdir -p /var/run/filesync/tools
+COPY ./filesync/config.yaml /var/run/filesync/filesync
+COPY ./filesync/requirements.txt /var/run/filesync/filesync
+COPY ./filesync/filesync.py /var/run/filesync/filesync
 
+
+COPY ./tools/sftp.py /var/run/filesync/tools
+
+WORKDIR /var/run/filesync/filesync
 RUN pip install -r requirements.txt --break-system-packages
 
 ENTRYPOINT ["python",  "filesync.py"]
-#  ENTRYPOINT ["bash"]
+# ENTRYPOINT ["bash"]
