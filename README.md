@@ -144,4 +144,4 @@ Now, your working folder should be at sftp-HA/stressTest.
     ```
 
 3. Open Browser with service's url
-    Please make sure the firewall policy allows to use 8000 of port. The UI details please review the video. Have fun!
+    Open test UI at http://<IP>:2224/stress/. Please make sure the firewall policy allows to use 8000 of port. The UI details please review the video. Have fun!

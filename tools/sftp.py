@@ -1,6 +1,7 @@
-import pysftp
 import os
 from stat import S_ISDIR, S_ISREG
+
+import pysftp
 
 
 class sftp:
@@ -91,7 +92,10 @@ class sftp:
                 for f in folders:
                     if not self.connection.exists(f):
                         print(f'Prepare to create folder: {f}')
-                        self.connection.mkdir(f)
+                        try:
+                            self.connection.mkdir(f)
+                        except Exception as err:
+                            raise Exception(err)
                     self.connection.chdir(f)
             try:
                 # Upload file from SFTP
