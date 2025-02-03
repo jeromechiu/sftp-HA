@@ -16,6 +16,7 @@ sys.path.insert(1, os.path.join(Path(__file__).resolve().parent.parent, 'tools')
 from sftp import sftp  # nopep8
 
 configName = 'config.yaml'
+syncFrrquency = 100
 
 
 def doSync(mode, master, standby, masterFiles, standbyFiles):
@@ -137,7 +138,7 @@ def syncFile(config):
                         standby.disconnect()
                         time.sleep(1)
 
-        time.sleep(100)
+        time.sleep(syncFrrquency)
 
 
 def runAll():

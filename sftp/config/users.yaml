@@ -3,33 +3,6 @@ users:
     name: "admin"
     password: "AhqTi3W4baG8U0u"
     admin: true
-  1:
-    name: "user1"
-    password: "1234"
-  2:
-    name: "user2"
-    password: "1234"
-  3:
-    name: "user3"
-    password: "1234"
-  4:
-    name: "user4"
-    password: "1234"
-  5:
-    name: "user5"
-    password: "1234"
-  6:                                                           
-    name: "user6"                                              
-    password: "1234"
-  7:                                                           
-    name: "user7"                                              
-    password: "1234"
-  8:                                                           
-    name: "user8"                                              
-    password: "1234"
-  9:                                                           
-    name: "user9"                                              
-    password: "1234"
-  10:                                                           
+  1:                                                           
     name: "EPuser"                                              
     password: "1234"

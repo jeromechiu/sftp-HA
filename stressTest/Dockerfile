@@ -20,4 +20,3 @@ WORKDIR /var/run/stressTest/stressTest/stressTest
 EXPOSE 8080
 
 ENTRYPOINT ["python",  "manage.py", "runserver", "0.0.0.0:8080"]
-# ENTRYPOINT ["bash"]
