@@ -13,7 +13,7 @@ COPY requirements.txt /var/run/filesync/filesync
 COPY filesync.py /var/run/filesync/filesync
 
 
-COPY ./tools/sftp.py /var/run/filesync/tools
+COPY tools/sftp.py /var/run/filesync/tools
 
 WORKDIR /var/run/filesync/filesync
 RUN pip install -r requirements.txt --break-system-packages
