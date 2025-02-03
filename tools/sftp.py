@@ -1,4 +1,5 @@
 import os
+import time
 from stat import S_ISDIR, S_ISREG
 
 import pysftp
@@ -88,7 +89,7 @@ class sftp:
         with self.connection.cd():
             if not self.connection.exists(remote_dir):
                 print(f'Remote folder {remote_dir} not exist')
-                folders = remote_dir.split('/')[1:]
+                folders = remote_dir.split('/')
                 for f in folders:
                     if not self.connection.exists(f):
                         print(f'Prepare to create folder: {f}')
@@ -97,14 +98,14 @@ class sftp:
                         except Exception as err:
                             raise Exception(err)
                     self.connection.chdir(f)
-            try:
-                # Upload file from SFTP
-                self.connection.put(localpath=source_local_path, remotepath=os.path.join(
-                    remote_dir, remote_filename), confirm=True)
-                print("upload completed")
+        try:
+            # Upload file from SFTP
+            self.connection.put(localpath=source_local_path, remotepath=os.path.join(
+                remote_dir, remote_filename), confirm=True)
+            print("upload completed")
 
-            except Exception as err:
-                raise Exception(err)
+        except Exception as err:
+            raise Exception(err)
 
     def download(self, remote_path, target_local_path):
         """
