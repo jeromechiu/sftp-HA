@@ -8,9 +8,9 @@ RUN apk update && apk upgrade && \
     rm -rf /var/cache/apk/*
 RUN mkdir -p /var/run/filesync/filesync
 RUN mkdir -p /var/run/filesync/tools
-COPY filesync/config.yaml /var/run/filesync/filesync
-COPY filesync/requirements.txt /var/run/filesync/filesync
-COPY filesync/filesync.py /var/run/filesync/filesync
+COPY config.yaml /var/run/filesync/filesync
+COPY requirements.txt /var/run/filesync/filesync
+COPY filesync.py /var/run/filesync/filesync
 
 
 COPY ./tools/sftp.py /var/run/filesync/tools
