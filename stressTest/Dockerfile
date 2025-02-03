@@ -16,7 +16,8 @@ WORKDIR /var/run/stressTest/stressTest
 RUN pip install -r requirements.txt --break-system-packages
 
 WORKDIR /var/run/stressTest/stressTest/stressTest
+RUN python manage.py makemigrations
 
-EXPOSE 8080
+EXPOSE 2224
 
 ENTRYPOINT ["python",  "manage.py", "runserver", "0.0.0.0:8080"]
