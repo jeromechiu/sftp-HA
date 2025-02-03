@@ -20,7 +20,7 @@ services:
     # image: filesync:0.1
     build:
       context: ./
-      dockerfile: ./stressTest/Dockerfile
+      dockerfile: ./filesync/Dockerfile
       # args:
       #   BUILDPATH: '/home/jerome/Codes/sftp-HA/'
     restart: always
