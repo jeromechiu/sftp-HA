@@ -1,6 +1,9 @@
 FROM alpine:latest
 
 
+ARG BUILDPATH
+RUN echo ${BUILDPATH}
+
 # Steps done in one RUN layer:
 # - Install upgrades and new packages
 RUN apk update && apk upgrade && \
@@ -13,7 +16,7 @@ COPY requirements.txt /var/run/filesync/filesync
 COPY filesync.py /var/run/filesync/filesync
 
 
-COPY tools/sftp.py /var/run/filesync/tools
+COPY ${BUILDPATH}tools/sftp.py /var/run/filesync/tools
 
 WORKDIR /var/run/filesync/filesync
 RUN pip install -r requirements.txt --break-system-packages

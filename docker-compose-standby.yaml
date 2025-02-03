@@ -18,7 +18,11 @@ services:
   sftp-sync:
     container_name: sftp-sync
     # image: filesync:0.1
-    build: ./filesync
+    build:
+      context: ./
+      dockerfile: ./stressTest/Dockerfile
+      # args:
+      #   BUILDPATH: '/home/jerome/Codes/sftp-HA/'
     restart: always
     depends_on:
       - sftp-standby

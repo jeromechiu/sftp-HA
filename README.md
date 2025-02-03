@@ -27,8 +27,13 @@ The scope of the project is limited sftp service and file synchronization.
 
 1. Clone the repository:
     
+2. Set Environment Variable
+    ```bash
+    BUILDPATH=$(cd "$(dirname "$1")"; pwd -P)/$(basename "$1")
+    ```
+
 2. Build the Docker images:
-    ```sh
+    ```bash
     docker-compose build
     ```
 
