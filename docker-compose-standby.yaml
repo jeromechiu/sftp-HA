@@ -21,16 +21,13 @@ services:
     build:
       context: ./
       dockerfile: ./filesync/Dockerfile
-      # args:
-      #   BUILDPATH: '/home/jerome/Codes/sftp-HA/'
     restart: always
     depends_on:
       - sftp-standby
     volumes:
-      - './filesync/config.yaml:/config.yaml:ro'
+      - ${PWD}/filesync/config.yaml:/var/run/filesync/filesync/config.yaml:rw
     networks:
-      sftp-net:
-        ipv4_address: 10.5.0.5
+      - sftp-net
 
 networks:
   sftp-net:

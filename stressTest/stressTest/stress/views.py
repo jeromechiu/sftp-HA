@@ -95,7 +95,7 @@ def do_work(count, sftp_url, sftp_port, sftp_username, sftp_password):
     uploadfile_detail = '\n'
     for i in range(count):
         folder = sftp_folders[randint(0, len(sftp_folders)-1)]
-        filename = f'{int(time.time())}.txt'
+        filename = f'{int(time.time()*1000)}.txt'
         if writeDummyFiles(folder, sftp_url, sftp_port, sftp_username, sftp_password, filename):
             uploadfile_detail += f'folder: {folder}, filename: {filename} done\n'
             done_count += 1

@@ -1,8 +1,0 @@
-users:
-  ADMIN:
-    name: "admin"
-    password: "AhqTi3W4baG8U0u"
-    admin: true
-  1:                                                           
-    name: "EPuser"                                              
-    password: "1234"

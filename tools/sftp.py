@@ -89,7 +89,7 @@ class sftp:
         with self.connection.cd():
             if not self.connection.exists(remote_dir):
                 print(f'Remote folder {remote_dir} not exist')
-                folders = remote_dir.split('/')
+                folders = remote_dir.split('/')[1:]
                 for f in folders:
                     if not self.connection.exists(f):
                         print(f'Prepare to create folder: {f}')
