@@ -1,0 +1,8 @@
+users:
+  ADMIN:
+    name: "admin"
+    password: ""
+    admin: true
+  1:                                                           
+    name: "EPuser"                                              
+    password: ""

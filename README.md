@@ -50,7 +50,7 @@ sFTP service is based on openssh and sshd services. We develop the code to creat
 
 ### User Account
 
-Ths example shows as following,
+The user account of sFTP service is maintained in config/users.yaml. Before to start the service, you should maintain user account first. Ths example shows as following,
 
 
 ```yaml
@@ -94,6 +94,37 @@ If you want to add a new user, please input relative information and give a new 
 
 FileSync is a tool designed to synchronize files between a master and standby SFTP server.
 
+### Configuration about Master and Standby
+
+The connection information of master and standby sFTP services is maintained in filesync/config.yaml. If you cannot find it, please copy example from onfig_default.yaml, then edit it.
+
+
+```bash
+    cp config_default.yaml config.yaml
+```
+
+Here is a example about config.yaml.
+
+```bash
+    Master:
+    IP: 10.5.0.5
+    # Change IP to the IP of the master server
+    PORT: 22
+    USERNAME: admin
+    PASSWORD: feg
+    # Change the password to the password of the master server
+    SYNCMETHOD: single
+
+    Standby:
+    IP: sftp-standby
+    # Do not change the IP of the standby server
+    PORT: 22
+    USERNAME: admin
+    PASSWORD: ehw
+    # Password of admin MUST be the same as the master server
+```
+
+
 ### Usage
 
 Ideally, the filesync function runs automatically once the docker service works. The frequency of synchronoization is 1/100 per seconds. <b> The synchorization frequency is not configured, so that if you wanna to change the ferquency please modify the code and rebuild the Docker image.</b>
@@ -124,7 +155,9 @@ Now, your working folder should be at sftp-HA/stressTest.
     ```bash
     pip install -r requirements.txt 
     ```
-### Run Stress Test
+
+
+## Stress Test
 1. Go into stress test folder
     ```bash
     cd stressTest 

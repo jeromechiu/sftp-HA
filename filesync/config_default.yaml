@@ -1,0 +1,16 @@
+Master:
+  IP: 10.5.0.0
+  # Change IP to the IP of the master server
+  PORT: 22
+  USERNAME: admin
+  PASSWORD: 
+  # Change the password to the password of the master server
+  SYNCMETHOD: single
+
+Standby:
+  IP: sftp-standby
+  # Do not change the IP of the standby server
+  PORT: 22
+  USERNAME: admin
+  PASSWORD: 
+  # Password of admin MUST be the same as the master server
