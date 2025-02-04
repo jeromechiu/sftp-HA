@@ -15,6 +15,7 @@ RUN apk update && apk upgrade && \
 
 
 COPY config/sshd_config /etc/ssh/sshd_config
+
 COPY config/users.yaml /
 COPY tools/runsftp.sh /
 COPY tools/main.py /

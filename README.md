@@ -39,7 +39,7 @@ The scope of the project is limited sftp service and file synchronization.
 
 3. Start the services:
     ```sh
-    docker-compose -f docker-compose-XXX.yaml up -d
+    docker-compose -f docker-compose-XXX.yaml up -d --build
     ```
 This project supports the high available architecture, Thus, for offical deploymenet, please don't run mater and standby at one physical machine.
 
@@ -132,7 +132,7 @@ Ideally, the filesync function runs automatically once the docker service works.
 
 ## Notification and Future Work
 
-Currently, the direction of synchronization only support from master to standby.<b>"It meansONE WAY TRIP".</b>
+Currently, the direction of synchronization only support from master to standby.<b>"It means ONE WAY TRIP".</b>
 
 
 ## Stress Test

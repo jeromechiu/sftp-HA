@@ -27,12 +27,22 @@ def doSync(mode, master, standby, masterFiles, standbyFiles):
             for directory, filename, mktime in masterFiles:
                 print(
                     f'Check file {os.path.join(directory,filename)} of Standby')
+
                 if [directory, filename] not in standbyFilesNoMktime:
                     print(f'File {filename} in Master ----> standby')
                     master.download(os.path.join(directory, filename),
                                     os.path.join(tmpdirname, filename))
                     standby.upload(os.path.join(
                         tmpdirname, filename), directory, filename)
+                else:
+                    if master.fileAttr(directory, filename).st_size != standby.fileAttr(directory, filename).st_size:
+                        print(
+                            f'{filename} of Master is not the same size as Standby')
+                        print(f'File {filename} in Master ----> standby')
+                        master.download(os.path.join(directory, filename),
+                                        os.path.join(tmpdirname, filename))
+                        standby.upload(os.path.join(
+                            tmpdirname, filename), directory, filename)
         else:
             """Not yet implement"""
             pass
