@@ -73,7 +73,7 @@ If you want to add a new user, please input relative information and give a new 
 1. Change Storage Location:
 
 
-    <b>The storage location of files</b> is dependent on docker-compose setting. Currently, the location is set at "sfto/data". If you wanna change the location. Please modify the yaml file of docker-compose like following example and use Linux path symbol.
+    <b>The storage location of files</b> is dependent on docker-compose setting. Currently, the location is set at "sftp/data". If you wanna change the location. Please modify the yaml file of docker-compose like following example and use Linux path symbol.
         
 
     ```yaml
@@ -136,7 +136,7 @@ Currently, the direction of synchronization only support from master to standby.
 
 
 ## Stress Test
-In order to test the performance of filesync service, the stresstest subproject allows user to generate and upload mass dummy file uploading to master sFTP service. The test method can refer to video at https://wistron.sharepoint.com/:v:/r/teams/ML8WiLES/Shared%20Documents/WiLES%20Common/7.%20Phase-III/11.%20WMY/00.%20%E5%8F%83%E8%80%83%E8%B3%87%E6%96%99/sftp_test.mp4?csf=1&web=1&e=YxNdhK.
+In order to test the performance of filesync service, the stresstest subproject allows user to generate and upload mass dummy file uploading to master sFTP service. The test method can refer to video at https://wistron.sharepoint.com/:v:/r/teams/ML8WiLES/Shared%20Documents/WiLES%20Common/7.%20Phase-III/11.%20WMY/00.%20%E5%8F%83%E8%80%83%E8%B3%87%E6%96%99/sftp_test.mp4?csf=1&web=1&e=YxNdhK
 
 If your environment never do the test before, please finish the steps of prerequirment first, thanks!
 ### Prerequirement
@@ -182,4 +182,4 @@ Now, your working folder should be at sftp-HA/stressTest.
     ```
 
 3. Open Browser with service's url
-    Open test UI at http://<IP>:2224/stress/. Please make sure the firewall policy allows to use 8000 of port. The UI details please review the video. Have fun!
+    Open test UI at http://IP:2224/stress/. Please make sure the firewall policy allows to use 8000 of port. The UI details please review the video. Have fun!
