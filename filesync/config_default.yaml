@@ -6,6 +6,7 @@ Master:
   PASSWORD: 
   # Change the password to the password of the master server
   SYNCMETHOD: single
+  SYNCINTERVAL: 100   # in seconds
 
 Standby:
   IP: sftp-standby
