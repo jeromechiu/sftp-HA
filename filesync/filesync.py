@@ -16,7 +16,7 @@ sys.path.insert(1, os.path.join(Path(__file__).resolve().parent.parent, 'tools')
 from sftp import sftp  # nopep8
 
 configName = 'config.yaml'
-syncFrrquency = 100
+syncInterval = 100
 
 
 def doSync(mode, master, standby, masterFiles, standbyFiles):
@@ -63,7 +63,7 @@ def syncFile(config):
     """
     Synchronizes files between a master and standby SFTP server based on the configuration file.
     """
-    print('Start to run Sync admin files')
+
     with open(config, 'r') as fp:
         configContext = yaml.load(fp, Loader=yaml.FullLoader)
         masterIP = configContext['Master']['IP']
@@ -72,12 +72,14 @@ def syncFile(config):
         masterPASSWD = configContext['Master']['PASSWORD']
         # Currently, the program only support single direction synchronization.
         syncMETHOD = configContext['Master']['SYNCMETHOD']
+        syncInterval = configContext['Master']['SYNCINTERVAL']
 
         standyIP = configContext['Standby']['IP']
         standyPORT = configContext['Standby']['PORT']
         standyUSER = configContext['Standby']['USERNAME']
         standyPASSWD = configContext['Standby']['PASSWORD']
-
+    print(
+        f'Start to run program. Master: {masterIP}, Standby: {standyIP}, SyncMethod: {syncMETHOD}, SyncInterval: {syncInterval}')
     while True:
         master = sftp(hostname=masterIP, port=masterPORT,
                       username=masterUSER, password=masterPASSWD)
@@ -148,7 +150,7 @@ def syncFile(config):
                         standby.disconnect()
                         time.sleep(1)
 
-        time.sleep(syncFrrquency)
+        time.sleep(syncInterval)
 
 
 def runAll():
