@@ -1,6 +1,9 @@
 FROM alpine:latest
 
 
+ARG BUILDPATH
+RUN echo ${BUILDPATH}
+
 # Steps done in one RUN layer:
 # - Install upgrades and new packages
 # - OpenSSH needs /var/run/sshd to run
@@ -14,12 +17,12 @@ RUN apk update && apk upgrade && \
     mkdir -p /home/admin/admin/
 
 
-COPY config/sshd_config /etc/ssh/sshd_config
+COPY ${BUILDPATH}/sftp/config/sshd_config /etc/ssh/sshd_config
 
-COPY config/users.yaml /
-COPY tools/runsftp.sh /
-COPY tools/main.py /
-COPY requirements.txt /
+COPY ${BUILDPATH}/sftp/config/users.yaml /
+COPY ${BUILDPATH}/sftp/tools/runsftp.sh /
+COPY ${BUILDPATH}/sftp/tools/main.py /
+COPY ${BUILDPATH}/sftp/requirements.txt /
 
 
 RUN cp /users.yaml /home/admin/admin/users.yaml
