@@ -9,8 +9,8 @@ services:
     ports:
       - '2223:22'
     volumes:
-      - ./sftp/data-standby:/home:rw
-      - ./sftp/config/users.yaml:/home/admin/admin/users.yaml
+      - ${PWD}/sftp/data-standby:/home:rw
+      - ${PWD}/sftp/config/users.yaml:/home/admin/admin/users.yaml
     networks:
       sftp-net:
         ipv4_address: 10.5.0.3

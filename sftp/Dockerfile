@@ -19,15 +19,15 @@ RUN apk update && apk upgrade && \
 
 COPY ${BUILDPATH}/sftp/config/sshd_config /etc/ssh/sshd_config
 
-COPY ${BUILDPATH}/sftp/config/users.yaml /
+COPY ${BUILDPATH}/sftp/config/users_default.yaml /home/admin/admin/
 COPY ${BUILDPATH}/sftp/tools/runsftp.sh /
 COPY ${BUILDPATH}/sftp/tools/main.py /
 COPY ${BUILDPATH}/sftp/requirements.txt /
+RUN cp /home/admin/admin/users_default.yaml /home/admin/admin/users.yaml
 
-
-RUN cp /users.yaml /home/admin/admin/users.yaml
 RUN useradd -m -s /bin/false admin
 RUN chown admin:admin /home/admin/admin/users.yaml
+
 RUN pip install -r requirements.txt --break-system-packages
 
 EXPOSE 22
