@@ -23,7 +23,7 @@ def doSync(mode, master, standby, masterFiles, standbyFiles):
     with TemporaryDirectory(prefix="sftp_") as tmpdirname:
         if mode == 'single':
             standbyFilesNoMktime = [[x1, x2] for [x1, x2, _] in standbyFiles]
-            """Master files first"""
+            """Master files first, update to Standby"""
             for directory, filename, mktime in masterFiles:
                 print(
                     f'Check file {os.path.join(directory,filename)} of Standby')
@@ -43,6 +43,15 @@ def doSync(mode, master, standby, masterFiles, standbyFiles):
                                         os.path.join(tmpdirname, filename))
                         standby.upload(os.path.join(
                             tmpdirname, filename), directory, filename)
+            """Master files first, delete from Standby"""
+            for directory, filename, _ in standbyFiles:
+                if directory != '/admin':
+                    print(
+                        f'Check file {os.path.join(directory,filename)} of Master')
+                    if [directory, filename] not in masterFiles:
+                        print(f'File {filename} in Standby ----> delete')
+                        standby.delete(os.path.join(directory, filename))
+                        print('fff')
         else:
             """Not yet implement"""
             pass
