@@ -158,7 +158,6 @@ def runAll():
     Runs the monitorConfig and syncFile processes concurrently.
     """
     config_flag = Event()
-    working_flag = Event
     monitor = mp.Process(target=monitorConfig, args=(config_flag,))
     sync = mp.Process(target=syncFile, args=(configName,))
 
@@ -166,7 +165,7 @@ def runAll():
     sync.start()
 
     while True:
-        if config_flag.is_set() and not working_flag.is_set():
+        if config_flag.is_set():
             sync.terminate()
             sync = mp.Process(target=syncFile, args=(configName,))
             sync.start()
