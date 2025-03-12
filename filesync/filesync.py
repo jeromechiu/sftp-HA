@@ -22,13 +22,12 @@ syncInterval = 100
 def doSync(mode, master, standby, masterFiles, standbyFiles, standbyDirs):
     with TemporaryDirectory(prefix="sftp_") as tmpdirname:
         if mode == 'single':
-            standbyFilesNoMktime = [[x1, x2] for [x1, x2, _] in standbyFiles]
             """Master files first, update to Standby"""
-            for directory, filename, mktime in masterFiles:
+            for directory, filename in masterFiles:
                 print(
                     f'Check file {os.path.join(directory,filename)} of Standby')
 
-                if [directory, filename] not in standbyFilesNoMktime:
+                if (directory, filename) not in standbyFiles:
                     print(f'File {filename} in Master ----> standby')
                     master.download(os.path.join(directory, filename),
                                     os.path.join(tmpdirname, filename))
@@ -44,13 +43,11 @@ def doSync(mode, master, standby, masterFiles, standbyFiles, standbyDirs):
                         standby.upload(os.path.join(
                             tmpdirname, filename), directory, filename)
             """Master files first, delete in Standby"""
-            for directory, filename, _ in standbyFiles:
+            for directory, filename in standbyFiles:
                 if directory != '/admin':
                     print(
                         f'Check file {os.path.join(directory,filename)} of Master')
-                    msasterFilesNoMktime = [[x1, x2]
-                                            for [x1, x2, _] in masterFiles]
-                    if [directory, filename] not in msasterFilesNoMktime:
+                    if (directory, filename) not in masterFiles:
                         print(f'File {filename} in Standby ----> delete')
                         standby.delete(os.path.join(directory, filename))
             for directory in standbyDirs:
@@ -120,15 +117,8 @@ def syncFile(config):
 
         root = '/'
         # Some time, the first listfiles will return empty list, so we need to try again
-        masterFiles = master.listfiles(root)
-        standbyFiles = standby.listfiles(root)
-
-        if masterFiles == []:
-            time.sleep(0.1)
-            masterFiles = master.listfiles(root)
-        if standbyFiles == []:
-            time.sleep(0.1)
-            standbyFiles = standby.listfiles(root)
+        masterFiles, _, _ = master.listDirsandFiles(root)
+        standbyFiles, standbyDirs, _ = standby.listDirsandFiles(root)
 
         # Sync user account info
         doSync(syncMETHOD, master=master, standby=standby,
@@ -164,25 +154,16 @@ def syncFile(config):
                             print(f'Connect to Standby error: {ex}')
                             continue
                         root = f'/{username}'
-
-                        # Some time, the first listfiles will return empty list, so we need to try again
-                        masterFiles = master.listfiles(root)
-                        standbyFiles = standby.listfiles(root)
-                        standbyDirs = standby.listDirs(root)
-
-                        if masterFiles == []:
-                            time.sleep(0.1)
-                            masterFiles = master.listfiles(root)
-                        if standbyFiles == []:
-                            time.sleep(0.1)
-                            standbyFiles = standby.listfiles(root)
-                        if standbyDirs == []:
-                            time.sleep(0.1)
-                            standbyDirs = standby.listDirs(root)
+                        masterFiles, masterDirs, _ = master.listDirsandFiles(
+                            root)
+                        standbyFiles, standbyDirs, _ = standby.listDirsandFiles(
+                            root)
 
                         print('______________________')
                         print(f'{username}\'s master data files: {masterFiles}')
                         print(f'{username}\'s standby data files: {standbyFiles}')
+                        print(
+                            f'{username}\'s master data directories: {masterDirs}')
                         print(
                             f'{username}\'s standby data directories: {standbyDirs}')
 
@@ -190,9 +171,7 @@ def syncFile(config):
                                masterFiles=masterFiles, standbyFiles=standbyFiles, standbyDirs=standbyDirs)
                         master.disconnect()
                         standby.disconnect()
-                        time.sleep(1)
-
-                        break
+                        time.sleep(0.5)
 
         time.sleep(syncInterval)
 

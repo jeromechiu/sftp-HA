@@ -37,34 +37,24 @@ class sftp:
         self.connection.close()
         print(f"Disconnected from host {self.hostname}")
 
-    def listDirs(self, remote_path):
+    def listDirsandFiles(self, remote_path):
         """lists all the files and directories in the specified path and returns them"""
         dirs = []
-        for d in self.connection.listdir(remote_path):
-            dirs.append(os.path.join(remote_path, d))
-        return dirs
+        files = []
+        ufiles = []
+
+        self.connection.walktree(
+            remote_path, fcallback=files.append, dcallback=dirs.append, ucallback=ufiles.append, recurse=True)
+
+        dirs.sort(key=lambda d: len(d))
+        files = [(os.path.split(f)[0], os.path.split(f)[1]) for f in files]
+
+        return files, dirs, ufiles
 
     def listdir_attr(self, remote_path):
         """lists all the files and directories (with their attributes) in the specified path and returns them"""
         for attr in self.connection.listdir_attr(remote_path):
             yield attr
-
-    def listfiles(self, remote_path):
-        """lists all files in sftp with directory and returns them"""
-        files = list()
-        try:
-            for file in self.listdir_attr(remote_path):
-                if S_ISDIR(file.st_mode):
-                    files.extend(self.listfiles(
-                        os.path.join(remote_path, file.filename)))
-                elif S_ISREG(file.st_mode):
-                    if list(file.filename)[0] != '.':
-                        files.append(
-                            [remote_path, file.filename, file.st_mtime])
-
-        except Exception as ex:
-            print(f'Get File List error: {ex}')
-        return files
 
     def fileAttr(self, remote_path, filename):
         attr = None
