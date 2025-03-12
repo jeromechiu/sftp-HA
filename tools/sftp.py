@@ -37,10 +37,12 @@ class sftp:
         self.connection.close()
         print(f"Disconnected from host {self.hostname}")
 
-    def listdir(self, remote_path):
+    def listDirs(self, remote_path):
         """lists all the files and directories in the specified path and returns them"""
-        for obj in self.connection.listdir(remote_path):
-            yield obj
+        dirs = []
+        for d in self.connection.listdir(remote_path):
+            dirs.append(os.path.join(remote_path, d))
+        return dirs
 
     def listdir_attr(self, remote_path):
         """lists all the files and directories (with their attributes) in the specified path and returns them"""
@@ -51,17 +53,12 @@ class sftp:
         """lists all files in sftp with directory and returns them"""
         files = list()
         try:
-            # for file in master.listdir('/'):
             for file in self.listdir_attr(remote_path):
-                # print(file.filename, file.st_mode, file.st_size, file.st_atime, file.st_mtime)
                 if S_ISDIR(file.st_mode):
-                    # print(file.filename + " is folder")
                     files.extend(self.listfiles(
                         os.path.join(remote_path, file.filename)))
                 elif S_ISREG(file.st_mode):
-
                     if list(file.filename)[0] != '.':
-                        # print(file.filename + " is file")
                         files.append(
                             [remote_path, file.filename, file.st_mtime])
 
@@ -131,13 +128,51 @@ class sftp:
 
         except Exception as err:
             raise Exception(err)
+
     def delete(self, remote_path):
         """
         Deletes the specified file from the remote sftp server.
         """
         try:
-            print(f'deleting {remote_path} from {self.hostname} as {self.username}')
+            print(
+                f'deleting {remote_path} from {self.hostname} as {self.username}')
             self.connection.remove(remote_path)
             print("delete completed")
+        except Exception as err:
+            raise Exception(err)
+
+    def removeDir(self, remote_path):
+        """
+        Deletes the specified directory from the remote sftp server.
+        """
+        try:
+            print(
+                f'deleting {remote_path} from {self.hostname} as {self.username}')
+            self.connection.rmdir(remote_path)
+            print("delete completed")
+        except Exception as err:
+            raise Exception(err)
+
+    def isDirEmpty(self, remote_path):
+        """
+        Checks if the specified directory is empty or not.
+        """
+        try:
+            if len(self.connection.listdir(remote_path)) == 0:
+                return True
+            else:
+                return False
+        except Exception as err:
+            raise Exception(err)
+
+    def isDirExist(self, remote_path):
+        """
+        Checks if the specified directory exists or not.
+        """
+        try:
+            if self.connection.isdir(remote_path):
+                return True
+            else:
+                return False
         except Exception as err:
             raise Exception(err)
