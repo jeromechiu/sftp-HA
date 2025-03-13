@@ -15,6 +15,11 @@ On the other hand, the file sychnoization sub-service, refer to filesync.py, wil
 - [Notification and Future Work](#notification-and-future-work)
 - [Stress Test](#stress-test)
 
+# Features
+- Support Openssh sftp function
+- Support adding user without stopping sftp service
+- Support file/dictionary sychronoization from Master to Standby, now support update and delete
+- Support file-sync's configuration change without stopping the service
 
 # System Architecture
 
