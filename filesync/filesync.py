@@ -19,22 +19,41 @@ configName = 'config.yaml'
 syncInterval = 100
 
 
-def doSync(mode, master, standby, masterFiles, standbyFiles, standbyDirs):
+def doSync(mode, master, standby, masterFiles, standbyFiles, standbyDirs, folderHouseKeeping):
     with TemporaryDirectory(prefix="sftp_") as tmpdirname:
         if mode == 'single':
+            masterfileNoAttr = [(x, y) for x, y, z in masterFiles]
+            standbyfileNoAttr = [(x, y) for x, y, z in standbyFiles]
             """Master files first, update to Standby"""
-            for directory, filename in masterFiles:
+            for directory, filename, attr in masterFiles:
+                # Remove outofdate files in Master, ignore admin
+                if directory != '/admin' and len(folderHouseKeeping) != 0:
+
+                    # {'/EPuser/Packinglist': 180, '/EPuser/Invoices': 60}
+                    if attr.st_mtime + folderHouseKeeping.get(directory, 0) < time.time():
+                        print(
+                            f'File {os.path.join(directory,filename)} in Master is out of date, delete')
+                        master.delete(os.path.join(directory, filename))
+                        continue
+
+                # Update Master file to Standby
                 print(
                     f'Check file {os.path.join(directory,filename)} of Standby')
+                # print(attr.st_mtime)
 
-                if (directory, filename) not in standbyFiles:
+                if (directory, filename) not in standbyfileNoAttr:
                     print(f'File {filename} in Master ----> standby')
-                    master.download(os.path.join(directory, filename),
-                                    os.path.join(tmpdirname, filename))
+                    try:
+                        master.download(os.path.join(directory, filename),
+                                        os.path.join(tmpdirname, filename))
+                    except Exception as ex:
+                        print(f'Download error: {ex}')
+                        continue
                     standby.upload(os.path.join(
                         tmpdirname, filename), directory, filename)
                 else:
-                    if master.fileAttr(directory, filename).st_size != standby.fileAttr(directory, filename).st_size:
+                    # check the last modified time is the same or not
+                    if attr.st_size != standby.fileAttr(directory, filename).st_size:
                         print(
                             f'{filename} of Master is not the same size as Standby')
                         print(f'File {filename} in Master ----> standby')
@@ -43,11 +62,11 @@ def doSync(mode, master, standby, masterFiles, standbyFiles, standbyDirs):
                         standby.upload(os.path.join(
                             tmpdirname, filename), directory, filename)
             """Master files first, delete in Standby"""
-            for directory, filename in standbyFiles:
+            for directory, filename, attr in standbyFiles:
                 if directory != '/admin':
                     print(
                         f'Check file {os.path.join(directory,filename)} of Master')
-                    if (directory, filename) not in masterFiles:
+                    if (directory, filename) not in masterfileNoAttr:
                         print(f'File {filename} in Standby ----> delete')
                         standby.delete(os.path.join(directory, filename))
             for directory in standbyDirs:
@@ -116,13 +135,12 @@ def syncFile(config):
             return
 
         root = '/'
-        # Some time, the first listfiles will return empty list, so we need to try again
         masterFiles, _, _ = master.listDirsandFiles(root)
         standbyFiles, standbyDirs, _ = standby.listDirsandFiles(root)
 
         # Sync user account info
         doSync(syncMETHOD, master=master, standby=standby,
-               masterFiles=masterFiles, standbyFiles=standbyFiles, standbyDirs=[])
+               masterFiles=masterFiles, standbyFiles=standbyFiles, standbyDirs=[], folderHouseKeeping=[])
 
         standby.disconnect()
 
@@ -134,10 +152,32 @@ def syncFile(config):
 
             with open(f'{tmpdirname}/users.yaml', 'r') as fp:
                 users = yaml.load(fp, Loader=yaml.FullLoader)
-                for user in users['users']:
-                    if users['users'][user]['name'] != 'admin':
-                        username = users['users'][user]['name']
-                        password = users['users'][user]['password']
+                for num in users['users']:
+                    if users['users'][num]['name'] != 'admin':
+                        folderHouseKeeping = dict()
+                        username = users['users'][num]['name']
+                        password = users['users'][num]['password']
+
+                        monthTimeUnit = 60 * 60 * 24 * 30
+                        # minuteTimeUnit = 60
+                        """    files_house_keeping:
+                                enabled: true
+                                folders: 
+                                    - Packinglist: 3 #months
+                                    - Invoices: 1 #months
+                        """
+                        fileHouseKeeping = users['users'][num]['files_house_keeping']
+
+                        if fileHouseKeeping['enabled']:
+                            print(f'HouseKeeping: {username} is enabled')
+                            for folder in fileHouseKeeping['folders']:
+                                folder_name = list(folder.keys())[0]
+                                houseKeepingInterval = folder[folder_name]
+                                print(
+                                    f'HouseKeeping: {username}\'s {folder_name} for {houseKeepingInterval} months')
+                                folderHouseKeeping[os.path.join(
+                                    root, username, folder_name)] = houseKeepingInterval * monthTimeUnit
+
                         print(f'User {username} is going to sync')
                         master = sftp(hostname=masterIP, port=masterPORT,
                                       username=username, password=password)
@@ -153,11 +193,18 @@ def syncFile(config):
                         except Exception as ex:
                             print(f'Connect to Standby error: {ex}')
                             continue
-                        root = f'/{username}'
+                        root = os.path.join('/', username)
+                        # Because of getting empty, so that we retrieve agin
                         masterFiles, masterDirs, _ = master.listDirsandFiles(
                             root)
                         standbyFiles, standbyDirs, _ = standby.listDirsandFiles(
                             root)
+                        if masterFiles == []:
+                            masterFiles, masterDirs, _ = master.listDirsandFiles(
+                                root)
+                        if standbyFiles == []:
+                            standbyFiles, standbyDirs, _ = standby.listDirsandFiles(
+                                root)
 
                         print('______________________')
                         print(f'{username}\'s master data files: {masterFiles}')
@@ -168,10 +215,11 @@ def syncFile(config):
                             f'{username}\'s standby data directories: {standbyDirs}')
 
                         doSync(syncMETHOD, master=master, standby=standby,
-                               masterFiles=masterFiles, standbyFiles=standbyFiles, standbyDirs=standbyDirs)
+                               masterFiles=masterFiles, standbyFiles=standbyFiles, standbyDirs=standbyDirs, folderHouseKeeping=folderHouseKeeping)
                         master.disconnect()
                         standby.disconnect()
                         time.sleep(0.5)
+                        break
 
         time.sleep(syncInterval)
 

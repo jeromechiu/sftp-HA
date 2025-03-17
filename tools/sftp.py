@@ -47,7 +47,7 @@ class sftp:
             remote_path, fcallback=files.append, dcallback=dirs.append, ucallback=ufiles.append, recurse=True)
 
         dirs.sort(key=lambda d: len(d))
-        files = [(os.path.split(f)[0], os.path.split(f)[1]) for f in files]
+        files = [(os.path.split(f)[0], os.path.split(f)[1], self.connection.stat(f)) for f in files]
 
         return files, dirs, ufiles
 

@@ -18,8 +18,9 @@ On the other hand, the file sychnoization sub-service, refer to filesync.py, wil
 # Features
 - Support Openssh sftp function
 - Support adding user without stopping sftp service
-- Support file/dictionary sychronoization from Master to Standby, now support update and delete
+- Support file/directony sychronoization from Master to Standby, now support update and delete
 - Support file-sync's configuration change without stopping the service
+- Support Hourse Keeping
 
 # System Architecture
 
@@ -161,6 +162,30 @@ Now, your working folder should be at sftp-HA/stressTest.
     pip install -r requirements.txt 
     ```
 
+## House Keeping
+Currently, the file synchronoization function support to do hourse keeping. A file of master will be watched the modification time. If the modification time is greater than default keeping life time, the master's file will be deleted immediately. Each folder of each account can be set in sftp's users.yaml. The life time unit is by month. You can find the program of house keeping in filesync.py.
+```yaml
+users:
+  ADMIN:
+    name: "admin"
+    password: ""
+    admin: true
+  1:                                                           
+    name: "EPuser"
+    password: "5678"
+    files_house_keeping:
+      enabled: true
+      folders: 
+        - Packinglist: 3 #months
+        - Invoices: 1 #months
+  2:
+    name: "ipuser"
+    password: "5655078"
+    files_house_keeping:
+      enabled: false
+      folders: 
+        - 報關單: 3 #months
+```
 
 ## Stress Test
 1. Go into stress test folder

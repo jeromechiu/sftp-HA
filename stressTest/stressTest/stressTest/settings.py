@@ -128,4 +128,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CELERY_BROKER_URL = 'amqp://127.0.0.1:5672'
 
-sftp_folders = ['1', '2']
+sftp_folders = ['Packinglist', 'Invoices']
