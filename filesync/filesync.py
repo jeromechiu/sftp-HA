@@ -166,18 +166,21 @@ def syncFile(config):
                                     - Packinglist: 3 #months
                                     - Invoices: 1 #months
                         """
-                        fileHouseKeeping = users['users'][num]['files_house_keeping']
+                        try:
+                            fileHouseKeeping = users['users'][num]['files_house_keeping']
 
-                        if fileHouseKeeping['enabled']:
-                            print(f'HouseKeeping: {username} is enabled')
-                            for folder in fileHouseKeeping['folders']:
-                                folder_name = list(folder.keys())[0]
-                                houseKeepingInterval = folder[folder_name]
-                                print(
-                                    f'HouseKeeping: {username}\'s {folder_name} for {houseKeepingInterval} months')
-                                folderHouseKeeping[os.path.join(
-                                    root, username, folder_name)] = houseKeepingInterval * monthTimeUnit
-
+                            if fileHouseKeeping['enabled']:
+                                print(f'HouseKeeping: {username} is enabled')
+                                for folder in fileHouseKeeping['folders']:
+                                    folder_name = list(folder.keys())[0]
+                                    houseKeepingInterval = folder[folder_name]
+                                    print(
+                                        f'HouseKeeping: {username}\'s {folder_name} for {houseKeepingInterval} months')
+                                    folderHouseKeeping[os.path.join(
+                                        root, username, folder_name)] = houseKeepingInterval * monthTimeUnit
+                        except KeyError:
+                            print(f'Key files_house_keeping not found')
+                            folderHouseKeeping = []
                         print(f'User {username} is going to sync')
                         master = sftp(hostname=masterIP, port=masterPORT,
                                       username=username, password=password)
@@ -219,7 +222,6 @@ def syncFile(config):
                         master.disconnect()
                         standby.disconnect()
                         time.sleep(0.5)
-                        break
 
         time.sleep(syncInterval)
 
