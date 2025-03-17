@@ -20,7 +20,7 @@ On the other hand, the file sychnoization sub-service, refer to filesync.py, wil
 - Support adding user without stopping sftp service
 - Support file/directony sychronoization from Master to Standby, now support update and delete
 - Support file-sync's configuration change without stopping the service
-- Support Hourse Keeping
+- Support House Keeping
 
 # System Architecture
 
@@ -163,7 +163,7 @@ Now, your working folder should be at sftp-HA/stressTest.
     ```
 
 ## House Keeping
-Currently, the file synchronoization function support to do hourse keeping. A file of master will be watched the modification time. If the modification time is greater than default keeping life time, the master's file will be deleted immediately. Each folder of each account can be set in sftp's users.yaml. The life time unit is by month. You can find the program of house keeping in filesync.py.
+Currently, the file synchronoization function support to do house keeping. A file of master will be watched the modification time. If the modification time is greater than default keeping life time, the master's file will be deleted immediately. Each folder of each account can be set in sftp's users.yaml. The life time unit is by month. You can find the program of house keeping in filesync.py.
 ```yaml
 users:
   ADMIN:
