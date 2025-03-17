@@ -29,4 +29,4 @@ class dummycountForm(forms.Form):
         dummy_amount (IntegerField): The number of dummy files.
     """
     dummy_amount = forms.IntegerField(
-        label='Number of Dummy Files:', initial=2, max_value=1000, min_value=1)
+        label='Number of Dummy Files:', initial=2, max_value=10000, min_value=1)
